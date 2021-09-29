@@ -17,6 +17,9 @@
 
 package org.apache.livy.sessions
 
+import io.hops.security.CertificateLocalizationCtx
+import org.apache.hadoop.security.UserGroupInformation
+
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -130,6 +133,12 @@ class SessionManager[S <: Session, R <: RecoveryMetadata : ClassTag](
     session.stop().map { case _ =>
       try {
         sessionStore.remove(sessionType, session.id)
+        if (CertificateLocalizationCtx.getInstance.getCertificateLocalization != null) {
+          val username = UserGroupInformation.getCurrentUser.getUserName
+          val applicationId = UserGroupInformation.getCurrentUser.getApplicationId
+          CertificateLocalizationCtx.getInstance.getCertificateLocalization.removeX509Material(username, applicationId)
+          CertificateLocalizationCtx.getInstance.setCertificateLocalization(null)
+        }
         synchronized {
           sessions.remove(session.id)
           session.name.foreach(sessionsByName.remove)
