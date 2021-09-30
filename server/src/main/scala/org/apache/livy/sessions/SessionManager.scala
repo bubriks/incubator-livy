@@ -133,7 +133,12 @@ class SessionManager[S <: Session, R <: RecoveryMetadata : ClassTag](
     session.stop().map { case _ =>
       try {
         sessionStore.remove(sessionType, session.id)
-
+        val certLocService = CertificateLocalizationCtx.getInstance.getCertificateLocalization
+        if (certLocService != null) {
+          val username = UserGroupInformation.getCurrentUser.getUserName
+          val applicationId = UserGroupInformation.getCurrentUser.getApplicationId
+          certLocService.removeX509Material(username, applicationId)
+        }
         synchronized {
           sessions.remove(session.id)
           session.name.foreach(sessionsByName.remove)

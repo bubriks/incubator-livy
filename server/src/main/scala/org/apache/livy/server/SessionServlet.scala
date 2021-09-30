@@ -17,13 +17,9 @@
 
 package org.apache.livy.server
 
-import io.hops.security.{CertificateLocalizationCtx, CertificateLocalizationService}
-import org.apache.hadoop.security.UserGroupInformation
-
 import java.security.AccessControlException
 import javax.servlet.http.HttpServletRequest
 import org.scalatra._
-
 import scala.concurrent._
 import scala.concurrent.duration._
 import org.apache.livy.{LivyConf, Logging}
@@ -118,12 +114,6 @@ abstract class SessionServlet[S <: Session, R <: RecoveryMetadata](
 
         case None =>
           NotFound(ResponseMessage(s"Session ${session.id} already stopped."))
-      }
-      val certLocService = CertificateLocalizationCtx.getInstance.getCertificateLocalization
-      if (certLocService != null) {
-        val username = UserGroupInformation.getCurrentUser.getUserName
-        val applicationId = UserGroupInformation.getCurrentUser.getApplicationId
-        certLocService.removeX509Material(username, applicationId)
       }
     }
   }

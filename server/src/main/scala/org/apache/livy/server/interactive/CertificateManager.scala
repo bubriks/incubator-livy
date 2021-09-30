@@ -30,7 +30,7 @@ object CertificateManager extends Logging{
   def startMetaStore(){
     // Create an instance of the CertificateLocalizationService to keep the track
     // of the certificates sent by the users
-    val certLocService: CertificateLocalizationService = new CertificateLocalizationService(CertificateLocalizationService.ServiceType.HM)
+    val certLocService = new CertificateLocalizationService(CertificateLocalizationService.ServiceType.HM)
     certLocService.init(new Configuration())
     certLocService.start()
     CertificateLocalizationCtx.getInstance.setCertificateLocalization(certLocService)
@@ -63,6 +63,7 @@ object CertificateManager extends Logging{
         }
     }
 
-    CertificateLocalizationCtx.getInstance.getCertificateLocalization.materializeCertificates(username, applicationId, username, keyStore, password, trustStore, password)
+    CertificateLocalizationCtx.getInstance.getCertificateLocalization
+      .materializeCertificates(username, applicationId, username, keyStore, password, trustStore, password)
   }
 }
