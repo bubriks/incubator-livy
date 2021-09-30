@@ -19,9 +19,11 @@ package org.apache.livy.server
 
 import java.security.AccessControlException
 import javax.servlet.http.HttpServletRequest
+
 import org.scalatra._
 import scala.concurrent._
 import scala.concurrent.duration._
+
 import org.apache.livy.{LivyConf, Logging}
 import org.apache.livy.rsc.RSCClientFactory
 import org.apache.livy.server.batch.BatchSession
