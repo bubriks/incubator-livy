@@ -17,13 +17,12 @@ object CertificateManager extends Logging{
       startMetaStore
     }
 
-    val username = UserGroupInformation.getCurrentUser.getUserName
-    val applicationId = UserGroupInformation.getCurrentUser.getApplicationId
+    val username = request.conf.get("spark.executorEnv.HADOOP_USER_NAME").get
     try{
-      CertificateLocalizationCtx.getInstance.getCertificateLocalization.getX509MaterialLocation(username, applicationId)
+      CertificateLocalizationCtx.getInstance.getCertificateLocalization.getX509MaterialLocation(username)
     } catch {
       case e: FileNotFoundException =>
-        setCertificates(request, username, applicationId)
+        setCertificates(request, username)
     }
   }
 
@@ -41,7 +40,7 @@ object CertificateManager extends Logging{
     }, 10)
   }
 
-  def setCertificates(request: CreateInteractiveRequest, username: String, applicationId: String) {
+  def setCertificates(request: CreateInteractiveRequest, username: String) {
     var password: String = null
     var trustStore: ByteBuffer = null
     var keyStore: ByteBuffer = null
@@ -64,6 +63,6 @@ object CertificateManager extends Logging{
     }
 
     CertificateLocalizationCtx.getInstance.getCertificateLocalization
-      .materializeCertificates(username, applicationId, username, keyStore, password, trustStore, password)
+      .materializeCertificates(username, username, keyStore, password, trustStore, password)
   }
 }

@@ -242,7 +242,7 @@ class ContextLauncher {
       };
       return new ChildProcess(conf, promise, child, confFile);
     } else {
-      String username = UserGroupInformation.getCurrentUser().getUserName();
+      String username = conf.get("spark.executorEnv.HADOOP_USER_NAME");
       String materialDirectory = CertificateLocalizationCtx.getInstance()
               .getCertificateLocalization().getX509MaterialLocation(username)
               .getCertFolder().toFile().getAbsolutePath();

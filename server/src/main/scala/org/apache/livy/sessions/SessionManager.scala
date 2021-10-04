@@ -135,9 +135,8 @@ class SessionManager[S <: Session, R <: RecoveryMetadata : ClassTag](
         sessionStore.remove(sessionType, session.id)
         val certLocService = CertificateLocalizationCtx.getInstance.getCertificateLocalization
         if (certLocService != null) {
-          val username = UserGroupInformation.getCurrentUser.getUserName
-          val applicationId = UserGroupInformation.getCurrentUser.getApplicationId
-          certLocService.removeX509Material(username, applicationId)
+          val username = session.proxyUser.get
+          certLocService.removeX509Material(username)
         }
         synchronized {
           sessions.remove(session.id)
