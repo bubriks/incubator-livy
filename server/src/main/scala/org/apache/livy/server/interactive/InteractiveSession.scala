@@ -78,7 +78,7 @@ object InteractiveSession extends Logging {
     val appTag = s"livy-session-$id-${Random.alphanumeric.take(8).mkString}"
     val impersonatedUser = accessManager.checkImpersonation(proxyUser, owner)
 
-    CertificateManager.initialize(request)
+    CertificateManager.initialize(request, proxyUser)
 
     val client = mockClient.orElse {
       val conf = SparkApp.prepareSparkConf(appTag, livyConf, prepareConf(

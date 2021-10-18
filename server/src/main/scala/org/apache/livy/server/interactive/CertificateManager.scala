@@ -3,21 +3,23 @@ package org.apache.livy.server.interactive
 import io.hops.security.{CertificateLocalizationCtx, CertificateLocalizationService}
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.security.UserGroupInformation
+import org.apache.hadoop.security.authentication.client.AuthenticationException
 import org.apache.hadoop.util.ShutdownHookManager
-import org.apache.livy.Logging
+import org.apache.livy.{LivyConf, Logging}
 
+import java.nio.charset.StandardCharsets
 import java.io.FileNotFoundException
 import java.nio.ByteBuffer
 import java.util.Base64
 
 object CertificateManager extends Logging{
 
-  def initialize(request: CreateInteractiveRequest) {
+  def initialize(request: CreateInteractiveRequest, proxyUser: Option[String]) {
     if (CertificateLocalizationCtx.getInstance.getCertificateLocalization == null) {
       startMetaStore
     }
 
-    val username = request.conf.get("spark.executorEnv.HADOOP_USER_NAME").get
+    val username = proxyUser.get
     try{
       CertificateLocalizationCtx.getInstance.getCertificateLocalization.getX509MaterialLocation(username)
     } catch {
@@ -62,7 +64,12 @@ object CertificateManager extends Logging{
         }
     }
 
-    CertificateLocalizationCtx.getInstance.getCertificateLocalization
-      .materializeCertificates(username, username, keyStore, password, trustStore, password)
+    if(StandardCharsets.UTF_8.decode(keyStore).toString.contains(username)){
+      CertificateLocalizationCtx.getInstance.getCertificateLocalization
+        .materializeCertificates(username, username, keyStore, password, trustStore, password)
+    }
+    else{
+      throw new AuthenticationException(s"$username does not correspond to information provided in the keystore file")
+    }
   }
 }

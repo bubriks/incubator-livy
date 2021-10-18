@@ -80,7 +80,11 @@ object LivyConf {
   val ACCESS_CONTROL_MODIFY_USERS = Entry("livy.server.access-control.modify-users", null)
   val ACCESS_CONTROL_VIEW_USERS = Entry("livy.server.access-control.view-users", null)
 
-  val SSL_KEYSTORE = Entry("livy.keystore", null)
+  val CERT_LOCATION = Entry("livy.server.cert.location", "/srv/hops/super_crypto/livy")
+
+  val SSL_KEYSTORE = Entry("livy.keystore", "livy__kstore.jks")
+  val SSL_TRUSTSTORE = Entry("livy.truststore", "livy__tstore.jks")
+  val SSL_PASSWORD = Entry("livy.password", "livy__passwd")
   val SSL_KEYSTORE_PASSWORD = Entry("livy.keystore.password", null)
   val SSL_KEY_PASSWORD = Entry("livy.key-password", null)
 
