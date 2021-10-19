@@ -12,12 +12,12 @@ import java.util.Base64
 
 object CertificateManager extends Logging{
 
-  def initialize(request: CreateInteractiveRequest) {
+  def initialize(request: CreateInteractiveRequest, proxyUser: Option[String]) {
     if (CertificateLocalizationCtx.getInstance.getCertificateLocalization == null) {
       startMetaStore
     }
 
-    val username = request.conf.get("spark.executorEnv.HADOOP_USER_NAME").get
+    val username = proxyUser.get
     try{
       CertificateLocalizationCtx.getInstance.getCertificateLocalization.getX509MaterialLocation(username)
     } catch {
